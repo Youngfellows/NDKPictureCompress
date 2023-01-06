@@ -14,7 +14,7 @@ import me.xiaosai.imagecompress.utils.BitmapUtil;
  * @author XiaoSai
  * @version V1.0.0
  */
-public class ImageCompress implements Handler.Callback{
+public class ImageCompress implements Handler.Callback {
     private Builder mBuilder;
     private final int DEFAULT_SIZE = 150;
     private Handler mHandler;
@@ -27,11 +27,11 @@ public class ImageCompress implements Handler.Callback{
         mHandler = new Handler(Looper.getMainLooper(), this);
     }
 
-    public static Builder with(Context context){
+    public static Builder with(Context context) {
         return new Builder(context);
     }
 
-    private void launch(){
+    private void launch() {
         if (TextUtils.isEmpty(mBuilder.filePath) && mBuilder.listener != null) {
             mHandler.sendMessage(mHandler.obtainMessage(MSG_COMPRESS_ERROR, new NullPointerException("image file cannot be null")));
             return;
@@ -45,15 +45,15 @@ public class ImageCompress implements Handler.Callback{
             @Override
             public void run() {
                 try {
-                    int ignoreSize = mBuilder.ignoreSize == 0?DEFAULT_SIZE:mBuilder.ignoreSize;
+                    int ignoreSize = mBuilder.ignoreSize == 0 ? DEFAULT_SIZE : mBuilder.ignoreSize;
                     String targetCompressPath = getImageCacheFile(checkSuffix(mBuilder.filePath));
                     String resultStr = BitmapUtil.compressBitmap(mBuilder.filePath, targetCompressPath, ignoreSize);
-                    if("1".equals(resultStr)){
+                    if ("1".equals(resultStr)) {
                         mHandler.sendMessage(mHandler.obtainMessage(MSG_COMPRESS_SUCCESS, targetCompressPath));
-                    }else{
+                    } else {
                         mHandler.sendMessage(mHandler.obtainMessage(MSG_COMPRESS_ERROR, new RuntimeException(resultStr)));
                     }
-                }catch (final Exception e){
+                } catch (final Exception e) {
                     mHandler.sendMessage(mHandler.obtainMessage(MSG_COMPRESS_ERROR, e));
                 }
             }
@@ -61,13 +61,14 @@ public class ImageCompress implements Handler.Callback{
     }
 
     public boolean handleMessage(Message msg) {
-        if (mBuilder.listener == null) return false;
+        if (mBuilder.listener == null)
+            return false;
         switch (msg.what) {
             case MSG_COMPRESS_START:
                 mBuilder.listener.onStart();
                 break;
             case MSG_COMPRESS_SUCCESS:
-                mBuilder.listener.onSuccess(msg.obj+"");
+                mBuilder.listener.onSuccess(msg.obj + "");
                 break;
             case MSG_COMPRESS_ERROR:
                 mBuilder.listener.onError((Throwable) msg.obj);
@@ -77,7 +78,7 @@ public class ImageCompress implements Handler.Callback{
     }
 
     private String checkSuffix(String path) {
-        if (TextUtils.isEmpty(path)||!path.contains(".")) {
+        if (TextUtils.isEmpty(path) || !path.contains(".")) {
             return ".jpg";
         }
         return path.substring(path.lastIndexOf("."), path.length());
@@ -90,18 +91,18 @@ public class ImageCompress implements Handler.Callback{
                 (TextUtils.isEmpty(suffix) ? ".jpg" : suffix);
     }
 
-    public static class Builder{
+    public static class Builder {
         private Context context;
         private String filePath;
         private int ignoreSize;
         private String targetDir;
         private OnCompressListener listener;
 
-        private Builder(Context context){
+        private Builder(Context context) {
             this.context = context;
         }
 
-        private ImageCompress build(){
+        private ImageCompress build() {
             return new ImageCompress(this);
         }
 
@@ -125,14 +126,16 @@ public class ImageCompress implements Handler.Callback{
             return this;
         }
 
-        public void launch(){
+        public void launch() {
             build().launch();
         }
     }
 
-    public interface OnCompressListener{
+    public interface OnCompressListener {
         void onStart();
+
         void onSuccess(String filePath);
+
         void onError(Throwable e);
     }
 }

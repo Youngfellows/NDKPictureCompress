@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.libjpegcompress.util.Utils;
 
@@ -21,7 +22,7 @@ import com.libjpegcompress.util.Utils;
  * 拍照核心处理
  */
 public class CameraCore {
-
+    private String TAG = this.getClass().getSimpleName();
     //调用系统相机的Code
     private static final int REQUEST_TAKE_PHOTO_CODE = 1001;
     //拍照裁剪的Code
@@ -122,6 +123,7 @@ public class CameraCore {
                 case REQUEST_TAKE_PICTRUE_CODE:
                     //获取系统返回的照片的Uri
                     photoURL = intent.getData();
+                    Log.d(TAG, "onResult:: photoURL=" + photoURL);
                     if("file".equals(photoURL.getScheme())){
                         //解决小米手机获取URL失败
                         cameraResult.onCameraSuccess(photoURL.getEncodedPath());
@@ -133,6 +135,7 @@ public class CameraCore {
                     if(cursor!=null&&cursor.moveToFirst()){
                         int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
                         String picturePath = cursor.getString(columnIndex);  //获取照片路径
+                        Log.d(TAG, "onResult:: picturePath=" + picturePath);
                         cursor.close();
                         if(!TextUtils.isEmpty(picturePath)){
                             cameraResult.onCameraSuccess(picturePath);
